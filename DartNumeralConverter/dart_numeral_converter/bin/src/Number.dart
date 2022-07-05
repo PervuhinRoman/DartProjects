@@ -1,21 +1,47 @@
 import "dart:math";
 
 class Number {
-  String _value;
-  int _notation;
+  String _value = "0.0";
+  String? _wholePart;
+  String? _fractionalPart;
+  int _notation = 0;
+  int _accuracy = 8;
 
-  Number(this._value, this._notation);
+  Number(String value, int notation) {
+    this._value = value;
+    this._notation = notation;
+    this._wholePart = _value.split(".")[0];
+    this._fractionalPart = _value.split(".")[1];
+  }
+
+  String getValue() => _value;
+  int getNotation() => _notation;
+  String? getWholePart() => _wholePart;
+  String? getFractionalPart() => _fractionalPart;
+
+  void setAccuracy(int accuracy) => this._accuracy = accuracy;
 
   Number toNotation(int outNotation){
-    num inNumber = _toDecimalNotation();
+    num inWholePart = _toDecimalNotation();
+    num inFractionalPart = _fractionalPartToDecimalNotation();
     String outNumber = "";
 
-    while(inNumber > 0){
-      outNumber += (inNumber % outNotation).toString();
-      inNumber = inNumber ~/ outNotation;
+    if(inWholePart == 0){
+      outNumber  += "0";
+    }
+
+    while(inWholePart > 0){
+      outNumber += (inWholePart % outNotation).toString();
+      inWholePart = inWholePart ~/ outNotation;
     }
 
     outNumber = String.fromCharCodes(outNumber.codeUnits.reversed);
+    outNumber += ".";
+
+    for(int i = 0; i < _accuracy && inFractionalPart % 1 != 0; i++){
+      outNumber += ((inFractionalPart * outNotation) ~/ 1).toString();
+      inFractionalPart = (inFractionalPart * outNotation) % 1;
+    }
 
     return new Number(outNumber, outNotation);
   }
@@ -23,8 +49,18 @@ class Number {
   num _toDecimalNotation(){
     num _decimalNumber = 0;
 
-    for(int i = 0; i < _value.length; i++){
-      _decimalNumber += (_getItemElement(_value[i]) * pow(_notation, _value.length - (i + 1)));
+    for(int i = 0; i < _wholePart!.length; i++){
+      _decimalNumber += (_getItemElement(_value[i]) * pow(_notation, _wholePart!.length - (i + 1)));
+    }
+
+    return _decimalNumber;
+  }
+
+  num _fractionalPartToDecimalNotation(){
+    double _decimalNumber = 0;
+
+    for(int i = 0, e = -1; i < _fractionalPart!.length; i++, e--){
+      _decimalNumber += (_getItemElement(_fractionalPart![i]) * pow(_notation, e));
     }
 
     return _decimalNumber;
@@ -42,9 +78,6 @@ class Number {
     return itemElement;
   }
 
-  String getValue() => _value;
-  int getNotation() => _notation;
-
   void display(){
     print("$_value ($_notation)");
   }
@@ -52,7 +85,7 @@ class Number {
   static bool isAvailable(String value, int notation){
     bool answer = false;
     for(int i = 0; i < value.length; i++){
-      if((value[i].codeUnitAt(0) >= 48 && value[i].codeUnitAt(0) <= 57) || (value[i].codeUnitAt(0) >= 65 && value[i].codeUnitAt(0) <= (65 - 1 + (notation - 10)))){
+      if((value[i].codeUnitAt(0) >= 48 && value[i].codeUnitAt(0) <= 57) || (value[i].codeUnitAt(0) >= 65 && value[i].codeUnitAt(0) <= (65 - 1 + (notation - 10))) || value[i].codeUnitAt(0) == 46){
         answer = true;
       } else {
         answer = false;

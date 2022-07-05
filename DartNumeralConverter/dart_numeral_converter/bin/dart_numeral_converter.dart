@@ -14,6 +14,7 @@ void main() {
 
   if(Number.isAvailable(inNumber, inNotation)){
     Number num = new Number(inNumber, inNotation);
+    num.setAccuracy(8);
     num.display();
 
     print("Enter the new (out) notation: ");
