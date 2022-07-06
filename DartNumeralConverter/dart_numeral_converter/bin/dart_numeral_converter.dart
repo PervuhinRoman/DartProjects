@@ -3,11 +3,23 @@ import 'dart:io';
 import "src/Number.dart";
 
 void main() {
+  bool isDot = false;
   String inNumber;
   int inNotation, outNotation;
 
   print("Enter the number: ");
   inNumber = stdin.readLineSync()!;
+
+  for(int i = 0; i < inNumber.length; i++){
+    if(inNumber[i] == "."){
+      isDot = true;
+    }
+  }
+
+  if(!isDot){
+    inNumber += ".0";
+    print(inNumber);
+  }
 
   print("Enter the notation: ");
   inNotation = int.parse(stdin.readLineSync()!);

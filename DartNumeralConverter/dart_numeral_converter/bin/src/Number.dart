@@ -31,7 +31,12 @@ class Number {
     }
 
     while(inWholePart > 0){
-      outNumber += (inWholePart % outNotation).toString();
+      if(inWholePart % outNotation >= 10){
+        outNumber += String.fromCharCode((inWholePart % outNotation + 55).toInt());
+      } else {
+        outNumber += (inWholePart % outNotation).toString();
+      }
+
       inWholePart = inWholePart ~/ outNotation;
     }
 
@@ -39,7 +44,12 @@ class Number {
     outNumber += ".";
 
     for(int i = 0; i < _accuracy && inFractionalPart % 1 != 0; i++){
-      outNumber += ((inFractionalPart * outNotation) ~/ 1).toString();
+      if((inFractionalPart * outNotation) ~/ 1 >= 10){
+        outNumber += String.fromCharCode((inFractionalPart * outNotation) ~/ 1 + 55);
+      } else {
+        outNumber += ((inFractionalPart * outNotation) ~/ 1).toString();
+      }
+
       inFractionalPart = (inFractionalPart * outNotation) % 1;
     }
 
@@ -84,12 +94,10 @@ class Number {
 
   static bool isAvailable(String value, int notation){
     bool answer = false;
-    for(int i = 0; i < value.length; i++){
-      if((value[i].codeUnitAt(0) >= 48 && value[i].codeUnitAt(0) <= 57) || (value[i].codeUnitAt(0) >= 65 && value[i].codeUnitAt(0) <= (65 - 1 + (notation - 10))) || value[i].codeUnitAt(0) == 46){
-        answer = true;
-      } else {
-        answer = false;
-      }
+    if(notation <= 1 || notation > 36){
+      answer = false;
+    } else {
+      answer = true;
     }
 
     return answer;
